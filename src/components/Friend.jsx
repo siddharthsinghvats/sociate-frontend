@@ -23,7 +23,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath ,atProfile=false}) =
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
+      `https://sociate-app-api.onrender.com/users/${_id}/${friendId}`,
       {
         method: "PATCH",
         headers: {
