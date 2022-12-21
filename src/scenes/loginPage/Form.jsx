@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
-
+import ReactLoading from "react-loading";
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
   lastName: yup.string().required("required"),
@@ -48,6 +48,7 @@ const initialValuesLogin = {
 
 const Form = () => {
   const [pageType, setPageType] = useState("login");
+  const [loading, setLoading] = useState(false);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ const Form = () => {
 
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
+    setLoading(true);
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
@@ -76,16 +78,22 @@ const Form = () => {
     if (savedUser) {
       setPageType("login");
     }
+    setLoading(false);
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("https://sociate-app-api.onrender.com/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
+    setLoading(true);
+    const loggedInResponse = await fetch(
+      "https://sociate-app-api.onrender.com/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      }
+    );
     const loggedIn = await loggedInResponse.json();
     onSubmitProps.resetForm();
+    setLoading(false);
     if (loggedIn) {
       dispatch(
         setLogin({
@@ -101,7 +109,23 @@ const Form = () => {
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
+  if (loading) {
+    return (
+    <div style={{
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
+      width:"100%",
+      height:"600px"
+      
 
+    }}>
+      <ReactLoading type="spinningBubbles" color="cyan" />
+    </div>
+        
+      
+    );
+  }
   return (
     <Formik
       onSubmit={handleFormSubmit}
